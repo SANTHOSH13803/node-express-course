@@ -1,0 +1,29 @@
+HTTP Request Methods in Express.js
+
+In Express.js, you can use the following methods to handle HTTP requests:
+
+1. app.get()
+   Purpose: Retrieve data from the server.
+   Example: app.get('/users', (req, res) => { ... });
+   Use case: Fetch a list of users from the database.
+2. app.post()
+   Purpose: Create new data on the server.
+   Example: app.post('/users', (req, res) => { ... });
+   Use case: Create a new user account.
+3. app.put()
+   Purpose: Update existing data on the server.
+   Example: app.put('/users/:id', (req, res) => { ... });
+   Use case: Update a user's profile information.
+4. app.delete()
+   Purpose: Delete data from the server.
+   Example: app.delete('/users/:id', (req, res) => { ... });
+   Use case: Delete a user account.
+5. app.all()
+   Purpose: Handle all HTTP request methods (GET, POST, PUT, DELETE, etc.) for a specific route.
+   Example: app.all('/secret', (req, res) => { ... });
+   Use case: Implement authentication or rate limiting for all requests to a specific route.
+6. app.use()
+   Purpose: Mount middleware functions or route handlers to the app.
+   Example: app.use(express.json()); or app.use('/api', apiRouter);
+   Use case: Enable JSON parsing for all incoming requests or mount a router for API routes.
+   Note that app.use() is not an HTTP request method, but rather a way to configure the app's middleware and routing.

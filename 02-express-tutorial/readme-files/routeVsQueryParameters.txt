@@ -1,0 +1,19 @@
+
+Revision Note: Router Params and Query Params
+
+Router Params
+
+Definition: Values passed in the URL path using colon notation (:paramName)
+Example: app.get('/users/:id', (req, res) => { ... });
+Access: req.params.paramName (e.g., req.params.id)
+Use case: Fetch a specific resource by ID
+Query Params
+
+Definition: Values passed in the URL query string using key-value pairs (?key=value)
+Example: app.get('/users', (req, res) => { ... }); with URL /users?name=John&age=30
+Access: req.query.key (e.g., req.query.name, req.query.age)
+Use case: Filter or sort data based on user input
+Key differences:
+
+Router params are part of the URL path, while query params are part of the query string.
+Router params are typically used for resource identification, while query params are used for filtering or sorting data.
