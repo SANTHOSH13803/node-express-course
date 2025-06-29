@@ -173,28 +173,150 @@
 // ^ -------------------------------------New block starts here -------------------------------------
 // * Express Middle-ware
 
+// const express = require("express");
+// const app = express();
+// const logger = require("./logger");
+// // req => middleware => res
+// // to keep the api simple we can create logger in seperate file and import it
+// // const logger = (req, res, next) => {
+// //   const method = req.method;
+// //   const url = req.url;
+// //   const time = new Date().getFullYear();
+// //   console.log(method, url, time);
+// //   next();
+// // };
+
+// // The red commented line:
+// // If you want logger to be in every route, insted of writing it manually every where
+// // we can use app.use(logger) -> this will be applied to every route
+// app.use(logger); // NOTE : THE palcement of this line is very important
+// //The logger only invokes after the above line is used
+
+// // If you want this logger to be in specific routes that statrs with some url
+// // you can use the below one
+// //  app.use('/api', logger) // #NOTE this will only be applied to routes that starts with /api
+
+// //! app.get("/", logger, (req, res) => {
+// app.get("/", (req, res) => {
+//   res.send("Home");
+// });
+// //! app.get("/about", logger, (req, res) => {
+// app.get("/about", (req, res) => {
+//   res.send("About");
+// });
+// app.get("/products", (req, res) => {
+//   res.send("products");
+// });
+
+// app.listen(5000, () => {
+//   console.log("Server is listening on port 5000...");
+// });
+
+// ^ -------------------------------------New block ends here -------------------------------------
+
+// ^ -------------------------------------New block starts here -------------------------------------
+
+//* HOW TO USE MULTIPLE MIDDLE WARES
+// const express = require("express");
+// const logger = require("./logger");
+// const auth = require("./authorize");
+// const app = express();
+// // ~ just use middleware's in an array in app.use
+// // there are different middleware, we can write our own, we can use the third part-one
+// // *CASE 1 : If you want to use middleware in every route (app.use([anyware1, anyware2, ...]))
+// // app.use([logger, auth]);
+
+// // NOTE : THE palcement of this line is very important
+// // first the logger will be invoked and then the auth will be invoked
+
+// app.get("/", (req, res) => {
+//   res.send("Home(*/ω＼*)");
+// });
+// app.get("/about", (req, res) => {
+//   res.send("About");
+// });
+
+// //CASE 2 : If you want to use middleware in specific routes
+// app.get("/api/products", [logger, auth], (req, res) => {
+//   console.log(req.user);
+//   res.send("Products");
+// });
+// app.get("/api/items", (req, res) => {
+//   console.log(req.user);
+//   res.send("Items");
+// });
+
+// app.listen(5000, () => {
+//   console.log("Server is listening on port 5000...");
+// });
+
+// ^ -------------------------------------New block ends here -------------------------------------
+
+// ^ -------------------------------------New block starts here -------------------------------------
+// * ----------------HTTP METHODS--------------------------------
+// *GET, POST, PUT, DELETE
 const express = require("express");
 const app = express();
-const logger = require("./logger");
-// req => middleware => res
-// to keep the api simple we can create logger in seperate file and import it
-// const logger = (req, res, next) => {
-//   const method = req.method;
-//   const url = req.url;
-//   const time = new Date().getFullYear();
-//   console.log(method, url, time);
-//   next();
-// };
+const { people } = require("./data");
+// static assets
+app.use(express.static("./methods-public"));
+// parse form data
+app.use(express.urlencoded({ extended: false })); // build in middleware
+//parse json
+app.use(express.json());
 
-app.get("/", logger, (req, res) => {
-  res.send("Home");
+app.get("/api/people", (req, res) => {
+  res.status(200).json({ success: true, data: people });
 });
-app.get("/about", logger, (req, res) => {
-  res.send("About");
+app.post("/api/people", (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res
+      .status(400)
+      .json({ success: false, msg: "Please provide name value" });
+  }
+  res.status(201).json({ success: true, person: name });
+});
+app.post("/login", (req, res) => {
+  const { name } = req.body;
+  if (name) {
+    return res.status(200).send(`Welcome ${name}`);
+  }
+
+  res.status(401).send("Please provide creds");
+});
+
+// post man
+app.post("/api/postman/people", (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res
+      .status(400)
+      .json({ success: false, msg: "Please provide name value" });
+  }
+  res.status(201).json({ success: true, data: [...people, name] });
+});
+
+// PUT METHOD
+app.put("/api/people/:personID", (req, res) => {
+  const { personID } = req.params;
+  const { name } = req.body;
+
+  const person = people.find((person) => person.id === Number(personID));
+  if (person) {
+    const newPeople = people.map((person) => {
+      if (Number(personID) === person.id) {
+        person.name = name;
+      }
+      return person;
+    });
+    return res.status(200).json({ success: true, data: newPeople });
+  }
+  res
+    .status(404)
+    .json({ success: false, msg: `no person with id ${personID}` });
 });
 
 app.listen(5000, () => {
   console.log("Server is listening on port 5000...");
 });
-
-// ^ -------------------------------------New block ends here -------------------------------------
